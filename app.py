@@ -14,7 +14,7 @@ st.set_page_config(
 )
 
 # Check for API key
-api_key = os.getenv("API_KEY")
+api_key = st.secrets("API_KEY")
 if not api_key:
     st.error("API key is not set. Please check your environment variables.")
     st.stop()
