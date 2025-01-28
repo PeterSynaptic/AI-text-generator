@@ -2,4 +2,4 @@ python-dotenv
 streamlit
 google-cloud
 google-auth
-
+google-generativeai
