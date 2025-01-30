@@ -31,57 +31,66 @@ model = genai.GenerativeModel('gemini-1.5-pro')
 if "conversation" not in st.session_state:
     st.session_state.conversation = []
 
-# Title for the app
+# Streamlit App Title
 st.title("🤖 Gemini Pro - AI Text Generator")
 
-# Instructions for the user
-st.markdown("""
-    <style>
-        .instruction {
-            font-size: 16px;
-            color: #666;
-            margin-bottom: 20px;
-        }
-    </style>
-    <div class="instruction">
+# User Instructions
+st.markdown(
+    """
+    <p style="font-size:16px; color:#666;">
         Enter your prompt below and let Gemini Pro generate content for you!
-    </div>
-""", unsafe_allow_html=True)
+    </p>
+    """,
+    unsafe_allow_html=True
+)
 
-# Input box for user prompt
-user_prompt = st.text_input("Type your prompt here", value="The opposite of hot is")
+# Custom height for text area
+user_prompt = st.text_area("Type your prompt here", value="", key="prompt_input", height=150)
 
-# Clear button
-if st.button("Clear Prompt"):
-    user_prompt = ""
+# Button container (Better UI with columns)
+col1, col2, col3 = st.columns([1, 1, 1])
 
-# Button to trigger the API call
-if st.button("Generate Response"):
-    if user_prompt.strip():
-        with st.spinner("Generating response..."):
-            try:
-                response = model.generate_content(user_prompt)
-                # Add user prompt and AI response to conversation history
-                st.session_state.conversation.append({"role": "user", "text": user_prompt})
-                st.session_state.conversation.append({"role": "AI", "text": response.text})
-                # Display the AI response
-                st.subheader("Generated Response:")
-                st.write(response.text)
-            except Exception as e:
-                st.error(f"An error occurred: {e}")
-    else:
-        st.warning("Please enter a prompt to get a response!")
+with col1:
+    if st.button("Generate Response"):
+        if user_prompt.strip():
+            with st.spinner("Generating response..."):
+                try:
+                    response = model.generate_content(user_prompt)
+                    ai_response = response.text.strip()
 
-# Reset conversation button
-if st.button("Reset Conversation"):
-    st.session_state.conversation = []
-    st.success("Conversation history cleared!")
+                    # Store conversation in session state
+                    st.session_state.conversation.append({"role": "User", "text": user_prompt})
+                    st.session_state.conversation.append({"role": "AI", "text": ai_response})
+
+                    # Display AI response
+                    st.subheader("Generated Response:")
+                    st.write(ai_response)
+
+                except Exception as e:
+                    st.error(f"An error occurred: {e}")
+        else:
+            st.warning("Please enter a prompt to get a response!")
+
+with col2:
+    if st.button("Clear Prompt"):
+        st.session_state.prompt_input = ""  # Clears the text area
+
+with col3:
+    if st.button("Reset Conversation"):
+        st.session_state.conversation = []
+        st.success("Conversation history cleared!")
 
 # Display conversation history in the sidebar
 with st.sidebar:
-    st.subheader("Conversation History")
-    for entry in st.session_state.conversation:
-        st.write(f"**{entry['role'].capitalize()}:** {entry['text']}")
+    st.subheader("📝 Conversation History")
+    if st.session_state.conversation:
+        for entry in st.session_state.conversation:
+            st.markdown(f"**{entry['role']}**: {entry['text']}")
+    else:
+        st.info("No conversation history yet.")
 
 # Footer
-st.markdown("Powered by Gemini Pro AI")
+st.markdown(
+    "<p style='text-align:center; font-size:14px; color:#666;'>Powered by <b>Gemini Pro AI</b></p>",
+    unsafe_allow_html=True
+)
