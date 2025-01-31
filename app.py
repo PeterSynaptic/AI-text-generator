@@ -10,8 +10,26 @@ load_dotenv()
 st.set_page_config(
     page_title="Gemini Pro - AI Text Generator",
     page_icon=":robot_face:",  # Emoji for page icon
-    layout="centered"  # Centered layout
+    #layout="centered"  # Centered layout
+    layout="wide"
 )
+
+# NEW: Custom CSS for full-width display and sidebar adjustments
+st.markdown("""
+    <style>
+        .main-container {
+            max-width: 100% !important;
+            padding: 0 1rem !important;
+        }
+        .stTextArea, .stButton, .stMarkdown {
+            max-width: 100% !important;
+        }
+        [data-testid="stSidebar"] {
+            min-width: 300px !important;
+            max-width: 300px !important;
+        }
+    </style>
+""", unsafe_allow_html=True)
 
 # Check for API key
 api_key = st.secrets["API_KEY"]
