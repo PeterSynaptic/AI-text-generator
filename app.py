@@ -62,106 +62,54 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Main content container - NEW: Added container for better layout control
-main_container = st.container()
+# NEW: Callback functions to handle state changes
+def clear_prompt():
+    st.session_state.prompt_input = ""  # Reset the text area value
 
-# Custom height for text area
-with main_container:
-    user_prompt = st.text_area("Type your prompt here", value="", key="prompt_input", height=150)
+def reset_conversation():
+    st.session_state.conversation = []
 
-# Button container 
+# Buttons FIRST (before text area)
 col1, col2, col3 = st.columns([1, 1, 1])
-
-# NEW: Separated button logic from response display
-generate_btn = False
 with col1:
     generate_btn = st.button("Generate Response")
 with col2:
-    if st.button("Clear Prompt"):
-        st.session_state.prompt_input = ""
+    clear_btn = st.button("Clear Prompt", on_click=clear_prompt)  # FIX: Added callback
 with col3:
-    if st.button("Reset Conversation"):
-        st.session_state.conversation = []
-        st.success("Conversation history cleared!")
+    reset_btn = st.button("Reset Conversation", on_click=reset_conversation)
 
-# Handle generation and display - NEW: Moved outside columns
+# Text area AFTER buttons
+with st.container():
+    user_prompt = st.text_area("Type your prompt here", value="", key="prompt_input", height=150)
+
+# Handle generation
 if generate_btn:
     if user_prompt.strip():
-        with st.spinner("Generating response..."):
+        with st.spinner("Generating..."):
             try:
                 response = model.generate_content(user_prompt)
                 ai_response = response.text.strip()
-
-                # Store conversation
-                st.session_state.conversation.append({"role": "User", "text": user_prompt})
-                st.session_state.conversation.append({"role": "AI", "text": ai_response})
-
-                # NEW: Full-width response display
-                with main_container:
-                    st.subheader("Generated Response:")
-                    st.markdown(
-                        f'<div style="padding: 15px; border-radius: 8px; background-color: #f0f2f6; width: 100%">{ai_response}</div>',
-                        unsafe_allow_html=True
-                    )
+                st.session_state.conversation.extend([
+                    {"role": "User", "text": user_prompt},
+                    {"role": "AI", "text": ai_response}
+                ])
+                
+                st.subheader("Generated Response:")
+                st.markdown(f'<div style="padding:15px;background:#f0f2f6;border-radius:8px">{ai_response}</div>', 
+                           unsafe_allow_html=True)
             except Exception as e:
-                st.error(f"An error occurred: {e}")
+                st.error(f"Error: {e}")
     else:
-        st.warning("Please enter a prompt to get a response!")
+        st.warning("Please enter a prompt!")
 
-# Display conversation history in the sidebar
+# Sidebar history
 with st.sidebar:
-    st.subheader("📝 Conversation History")
+    st.subheader("📝 History")
     if st.session_state.conversation:
         for entry in st.session_state.conversation:
             st.markdown(f"**{entry['role']}:** {entry['text']}")
     else:
-        st.info("No conversation history yet.")
-
-
-# Custom height for text area
-#user_prompt = st.text_area("Type your prompt here", value="", key="prompt_input", height=150)
-
-# Button container (Better UI with columns)
-#col1, col2, col3 = st.columns([1, 1, 1])
-
-#with col1:
-    #if st.button("Generate Response"):
-        #if user_prompt.strip():
-            #with st.spinner("Generating response..."):
-                #try:
-                    #response = model.generate_content(user_prompt)
-                    #ai_response = response.text.strip()
-
-                    # Store conversation in session state
-                    #st.session_state.conversation.append({"role": "User", "text": user_prompt})
-                    #st.session_state.conversation.append({"role": "AI", "text": ai_response})
-
-                    # Display AI response
-                    #st.subheader("Generated Response:")
-                    #st.write(ai_response)
-
-                #except Exception as e:
-                    #st.error(f"An error occurred: {e}")
-        #else:
-            #st.warning("Please enter a prompt to get a response!")
-
-#with col2:
-    #if st.button("Clear Prompt"):
-        #st.session_state.prompt_input = ""  # Clears the text area
-
-#with col3:
-    #if st.button("Reset Conversation"):
-        #st.session_state.conversation = []
-        #st.success("Conversation history cleared!")
-
-# Display conversation history in the sidebar
-#with st.sidebar:
-    #st.subheader("📝 Conversation History")
-    #if st.session_state.conversation:
-        #for entry in st.session_state.conversation:
-            #st.markdown(f"**{entry['role']}**: {entry['text']}")
-    #else:
-        #st.info("No conversation history yet.")
+        st.info("No history yet")
 
 # Footer
 st.markdown(
