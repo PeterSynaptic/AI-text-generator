@@ -14,16 +14,36 @@ st.set_page_config(
     layout="wide"
 )
 
-# NEW: Custom CSS for full-width display and sidebar adjustments
+# Custom CSS improvements
 st.markdown("""
     <style>
-        .main-container {
-            max-width: 100% !important;
-            padding: 0 1rem !important;
+        /* Main content styling */
+        .main-content { max-width: 900px; margin: 0 auto; }
+        
+        /* Text area styling */
+        .stTextArea textarea { 
+            min-height: 150px; 
+            border-radius: 8px;
+            padding: 1rem !important;
         }
-        .stTextArea, .stButton, .stMarkdown {
-            max-width: 100% !important;
+        
+        /* Response styling */
+        .response-box {
+            padding: 1.5rem;
+            border-radius: 8px;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            margin: 1rem 0;
         }
+        
+        /* Button styling */
+        .stButton>button {
+            border-radius: 20px;
+            padding: 0.5rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        /* Sidebar adjustments */
         [data-testid="stSidebar"] {
             min-width: 300px !important;
             max-width: 300px !important;
@@ -49,70 +69,83 @@ model = genai.GenerativeModel('gemini-1.5-pro')
 if "conversation" not in st.session_state:
     st.session_state.conversation = []
 
-# Streamlit App Title
-st.title("🤖 Gemini Pro - AI Text Generator")
-
-# User Instructions
-st.markdown(
-    """
-    <p style="font-size:16px; color:#666;">
-        Enter your prompt below and let Gemini Pro generate content for you!
-    </p>
-    """,
-    unsafe_allow_html=True
-)
-
-# NEW: Callback functions to handle state changes
+# Callback functions
 def clear_prompt():
-    st.session_state.prompt_input = ""  # Reset the text area value
+    st.session_state.prompt_input = ""
+    st.session_state.generated_response = None
 
 def reset_conversation():
     st.session_state.conversation = []
+    st.session_state.generated_response = None
 
-# Buttons FIRST (before text area)
-col1, col2, col3 = st.columns([1, 1, 1])
-with col1:
-    generate_btn = st.button("Generate Response")
-with col2:
-    clear_btn = st.button("Clear Prompt", on_click=clear_prompt)  # FIX: Added callback
-with col3:
-    reset_btn = st.button("Reset Conversation", on_click=reset_conversation)
-
-# Text area AFTER buttons
+# Main content container
 with st.container():
-    user_prompt = st.text_area("Type your prompt here", value="", key="prompt_input", height=150)
+    st.title("🤖 Gemini Pro - AI Text Generator")
+    st.markdown("### Start your AI-powered conversation")
 
-# Handle generation
-if generate_btn:
-    if user_prompt.strip():
-        with st.spinner("Generating..."):
-            try:
-                response = model.generate_content(user_prompt)
-                ai_response = response.text.strip()
-                st.session_state.conversation.extend([
-                    {"role": "User", "text": user_prompt},
-                    {"role": "AI", "text": ai_response}
-                ])
-                
-                st.subheader("Generated Response:")
-                st.markdown(f'<div style="padding:15px;background:#f0f2f6;border-radius:8px">{ai_response}</div>', 
-                           unsafe_allow_html=True)
-            except Exception as e:
-                st.error(f"Error: {e}")
-    else:
-        st.warning("Please enter a prompt!")
+    # Text input section
+    user_prompt = st.text_area(
+        "Type your prompt here:", 
+        value="", 
+        key="prompt_input", 
+        height=200,
+        placeholder="Enter your question or request here..."
+    )
 
-# Sidebar history
+    # Generate button - centered below text area
+    col1, col2, col3 = st.columns([1,2,1])
+    with col2:
+        generate_btn = st.button("🚀 Generate Response", use_container_width=True)
+
+    # Response section
+    if 'generated_response' in st.session_state and st.session_state.generated_response:
+        st.markdown("---")
+        st.markdown("### Generated Response")
+        st.markdown(
+            f'<div class="response-box">{st.session_state.generated_response}</div>',
+            unsafe_allow_html=True
+        )
+        
+        # Clear prompt button below response
+        st.button("🧹 Clear Prompt & Response", on_click=clear_prompt, type="secondary")
+
+# Sidebar section
 with st.sidebar:
-    st.subheader("📝 History")
+    st.subheader("⚙️ Settings")
+    st.button("🔄 Reset Conversation History", on_click=reset_conversation, type="primary")
+    
+    st.markdown("---")
+    st.subheader("📜 History")
     if st.session_state.conversation:
-        for entry in st.session_state.conversation:
+        for entry in reversed(st.session_state.conversation):
             st.markdown(f"**{entry['role']}:** {entry['text']}")
+            st.markdown("---")
     else:
-        st.info("No history yet")
+        st.info("No conversation history yet")
+
+# Generation logic
+if generate_btn and user_prompt.strip():
+    try:
+        with st.spinner("✨ Generating response..."):
+            response = model.generate_content(user_prompt)
+            ai_response = response.text.strip()
+            
+            # Store in session state
+            st.session_state.conversation.append({"role": "User", "text": user_prompt})
+            st.session_state.conversation.append({"role": "AI", "text": ai_response})
+            st.session_state.generated_response = ai_response
+            st.rerun()
+            
+    except Exception as e:
+        st.error(f"❌ Error: {str(e)}")
+elif generate_btn:
+    st.warning("⚠️ Please enter a prompt before generating!")
 
 # Footer
+st.markdown("---")
 st.markdown(
-    "<p style='text-align:center; font-size:14px; color:#666;'>Powered by <b>Gemini Pro AI</b></p>",
+    "<div style='text-align: center; color: #666; margin-top: 2rem;'>"
+    "Powered by Gemini Pro AI • "
+    "<a href='https://ai.google/' target='_blank'>Privacy Policy</a></div>",
     unsafe_allow_html=True
 )
