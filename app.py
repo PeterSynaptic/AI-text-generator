@@ -43,20 +43,20 @@ st.markdown("""
             margin: 1rem 0;
         }
         
-        #/* Button styling */
-        #.stButton>button {
-            #border-radius: 20px;
-            #padding: 0.5rem 1.5rem;
-            #transition: all 0.3s ease;
-        #}
+        /* Button styling */
+        .stButton>button {
+            border-radius: 20px;
+            padding: 0.5rem 1.5rem;
+            transition: all 0.3s ease;
+        }
         
-        #/* Sidebar adjustments */
-        #[data-testid="stSidebar"] {
-            #min-width: 300px !important;
-            #max-width: 300px !important;
-        #}
-    #</style>
-#""", unsafe_allow_html=True)
+        /* Sidebar adjustments */
+        [data-testid="stSidebar"] {
+            min-width: 300px !important;
+            max-width: 300px !important;
+        }
+    </style>
+""", unsafe_allow_html=True)
 
 # Check for API key
 api_key = st.secrets["API_KEY"]
