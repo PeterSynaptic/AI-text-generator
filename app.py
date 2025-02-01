@@ -38,7 +38,7 @@ st.markdown("""
         .response-box {
             padding: 1rem;
             border-radius: 8px;
-            background: white;
+            background: black;
             border: 1px solid #dee2e6;
             margin: 1rem 0;
         }
