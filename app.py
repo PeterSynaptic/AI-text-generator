@@ -18,8 +18,15 @@ st.set_page_config(
 st.markdown("""
     <style>
         /* Main content styling */
-        .main-content { max-width: 900px; margin: 0 auto; }
+        .main-content { max-width: 900px; margin: 0 auto; 
+        }
         
+        /* Responsive adjustments */
+        @media (max-width: 768px) { 
+            .main-content { 
+                max-width: 90vw; 
+            }
+            
         /* Text area styling */
         .stTextArea textarea { 
             min-height: 150px; 
