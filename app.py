@@ -15,48 +15,48 @@ st.set_page_config(
 )
 
 # Custom CSS improvements
-st.markdown("""
-    <style>
-        /* Main content styling */
-        .main-content { max-width: 900px; margin: 0 auto; 
-        }
+#st.markdown("""
+    #<style>
+        #/* Main content styling */
+        #.main-content { max-width: 900px; margin: 0 auto; 
+        #}
         
-        /* Responsive adjustments */
-        @media (max-width: 768px) { 
-            .main-content { 
-                max-width: 90vw; 
-            }
+        #/* Responsive adjustments */
+        #@media (max-width: 768px) { 
+            #.main-content { 
+                #max-width: 90vw; 
+            #}
             
-        /* Text area styling */
-        .stTextArea textarea { 
-            min-height: 150px; 
-            border-radius: 8px;
-            padding: 1rem !important;
-        }
+        #/* Text area styling */
+        #.stTextArea textarea { 
+            #min-height: 150px; 
+            #border-radius: 8px;
+            #padding: 1rem !important;
+        #}
         
-        /* Response styling */
-        .response-box {
-            padding: 1.5rem;
-            border-radius: 8px;
-            background: #f8f9fa;
-            border: 1px solid #dee2e6;
-            margin: 1rem 0;
-        }
+        #/* Response styling */
+        #.response-box {
+            #padding: 1.5rem;
+            #border-radius: 8px;
+            #background: #f8f9fa;
+            #border: 1px solid #dee2e6;
+            #margin: 1rem 0;
+        #}
         
-        /* Button styling */
-        .stButton>button {
-            border-radius: 20px;
-            padding: 0.5rem 1.5rem;
-            transition: all 0.3s ease;
-        }
+        #/* Button styling */
+        #.stButton>button {
+            #border-radius: 20px;
+            #padding: 0.5rem 1.5rem;
+            #transition: all 0.3s ease;
+        #}
         
-        /* Sidebar adjustments */
-        [data-testid="stSidebar"] {
-            min-width: 300px !important;
-            max-width: 300px !important;
-        }
-    </style>
-""", unsafe_allow_html=True)
+        #/* Sidebar adjustments */
+        #[data-testid="stSidebar"] {
+            #min-width: 300px !important;
+            #max-width: 300px !important;
+        #}
+    #</style>
+#""", unsafe_allow_html=True)
 
 # Check for API key
 api_key = st.secrets["API_KEY"]
