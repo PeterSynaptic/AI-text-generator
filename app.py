@@ -67,7 +67,7 @@ if not api_key:
         st.stop()
 
 # Configure the generative AI API key
-genai.configure(api_key=api_key)
+genai.configure(api_key=API_KEY)
 
 # Initialize the Gemini-Pro model
 model = genai.GenerativeModel('gemini-1.5-pro')
