@@ -58,16 +58,17 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Check for API key
-api_key = st.secrets["API_KEY"]
-if not api_key:
+# Check for API key and configure
+try:
+    api_key = st.secrets["API_KEY"]
+    genai.configure(api_key=api_key)
+except KeyError:
     api_key = st.text_input("Enter your Gemini API Key:", type="password")
-    if not api_key:
+    if api_key:
+        genai.configure(api_key=api_key)
+    else:
         st.warning("Please enter your API key to proceed.")
         st.stop()
-
-# Configure the generative AI API key
-genai.configure(api_key=API_KEY)
 
 # Initialize the Gemini-Pro model
 model = genai.GenerativeModel('gemini-1.5-pro')
